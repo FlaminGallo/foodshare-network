@@ -1,6 +1,6 @@
 # FoodShare Network
 
-Sistema de Gestión de Recursos Alimentarios (ODS 2 — Hambre Cero)
+Sistema de Gestión de Recursos Alimentarios (ODS 2 — Hambre Cero) 
 Proyecto Integrador de Programación Orientada a Objetos — UVM
 
 ## Descripción
@@ -14,11 +14,17 @@ alimentos. Usuarios: Restaurante (donante), Fundación (receptor) y Administrado
 - Metodología Scrum
 
 ## Cómo ejecutarlo
-python avance.py
+python proyecto.py
 
 ## Estado actual (Fase 1)
 Prototipo con las clases Usuario, Restaurante y Donacion.
 Pendiente: Fundacion, Administrador, Alimento, Nutriente e interfaz gráfica.
 
 ## Equipo
-Irving Hernández Hernández, Luis Antonio Gaona Gallo, Héctor Antonio Cedillo Poy, Germán Vladimir López Vázquez, Valeria De La Paz Cedillo Trujillo, Erik Isai Olvera Maldonado, Diego Michael Flores Ramírez.
+Irving Hernández Hernández 
+Luis Antonio Gaona Gallo 
+Héctor Antonio Cedillo Poy 
+Germán Vladimir López Vázquez 
+Valeria De La Paz Cedillo Trujillo 
+Erik Isai Olvera Maldonado 
+Diego Michael Flores Ramírez
