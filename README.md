@@ -21,10 +21,4 @@ Prototipo con las clases Usuario, Restaurante y Donacion.
 Pendiente: Fundacion, Administrador, Alimento, Nutriente e interfaz gráfica.
 
 ## Equipo
-Irving Hernández Hernández
-Luis Antonio Gaona Gallo
-Héctor Antonio Cedillo Poy,
-Germán Vladimir López Vázquez
-Valeria De La Paz Cedillo Trujillo,
-Erik Isai Olvera Maldonado
-Diego Michael Flores Ramírez.
+Irving Hernández Hernández, Luis Antonio Gaona Gallo, Héctor Antonio Cedillo Poy, Germán Vladimir López Vázquez, Valeria De La Paz Cedillo Trujillo, Erik Isai Olvera Maldonado, Diego Michael Flores Ramírez.
