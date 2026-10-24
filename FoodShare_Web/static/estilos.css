@@ -1,0 +1,61 @@
+/* static/estilos.css */
+:root {
+  --color-primario: #1F6F43;
+  --color-primario-hover: #165634;
+  --color-secundario: #E8A33D;
+  --color-bg-ventana: #F7F8F5;
+  --color-bg-panel: #FFFFFF;
+  --color-texto-principal: #1F2933;
+  --color-texto-secundario: #52606D;
+  --color-borde: #E4E7EB;
+  
+  /* Estados */
+  --estado-disponible-bg: #E9F5EE;
+  --estado-disponible-txt: #1F6F43;
+  --estado-pendiente-bg: #FDF4E7;
+  --estado-pendiente-txt: #B45309;
+  --estado-reservada-bg: #EFF6FF;
+  --estado-reservada-txt: #1D4ED8;
+  --estado-recibida-bg: #F3F4F6;
+  --estado-recibida-txt: #374151;
+  --estado-vencida-bg: #FEF2F2;
+  --estado-vencida-txt: #B91C1C;
+}
+
+body {
+  background-color: var(--color-bg-ventana);
+  color: var(--color-texto-principal);
+}
+
+.estado-badge {
+    padding: 0.125rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.estado-badge::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.estado-Disponible { background-color: var(--estado-disponible-bg); color: var(--estado-disponible-txt); }
+.estado-Disponible::before { background-color: #22C55E; }
+
+.estado-Pendiente { background-color: var(--estado-pendiente-bg); color: var(--estado-pendiente-txt); }
+.estado-Pendiente::before { background-color: #F59E0B; }
+
+.estado-Reservada { background-color: var(--estado-reservada-bg); color: var(--estado-reservada-txt); }
+.estado-Reservada::before { background-color: #2563EB; }
+
+.estado-Recibida { background-color: var(--estado-recibida-bg); color: var(--estado-recibida-txt); }
+.estado-Recibida::before { background-color: #6B7280; }
+
+.estado-Vencida, .estado-Rechazada { background-color: var(--estado-vencida-bg); color: var(--estado-vencida-txt); }
+.estado-Vencida::before, .estado-Rechazada::before { background-color: #DC2626; }

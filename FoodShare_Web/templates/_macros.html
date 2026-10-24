@@ -1,0 +1,24 @@
+{% macro estado_badge(estado) %}
+  {% set est = estado|lower %}
+  {% set color_class = 'bg-surface-variant text-on-surface-variant' %}
+  {% set dot_class = 'bg-on-surface-variant' %}
+  
+  {% if est == 'reservada' %}
+    {% set color_class = 'bg-tertiary-fixed text-on-tertiary-fixed-variant' %}
+    {% set dot_class = 'bg-tertiary' %}
+  {% elif est == 'disponible' %}
+    {% set color_class = 'bg-primary-fixed text-on-primary-fixed-variant' %}
+    {% set dot_class = 'bg-primary' %}
+  {% elif est == 'pendiente' or est == 'pendiente de validación' %}
+    {% set color_class = 'bg-secondary-fixed text-on-secondary-fixed-variant' %}
+    {% set dot_class = 'bg-secondary' %}
+  {% elif est == 'vencida' or est == 'rechazada' %}
+    {% set color_class = 'bg-error-container text-on-error-container' %}
+    {% set dot_class = 'bg-error' %}
+  {% endif %}
+
+  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full {{ color_class }} font-label-md text-label-md font-semibold capitalize">
+    <span class="w-1.5 h-1.5 rounded-full {{ dot_class }}"></span>
+    {{ estado }}
+  </span>
+{% endmacro %}

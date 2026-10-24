@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block auth_content %}
+<div class="flex flex-col w-full">
+  <div class="w-full max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      <!-- LADO IZQUIERDO: Información institucional y operativa -->
+      <div class="lg:col-span-7 flex flex-col space-y-8">
+        <div class="space-y-4">
+          <h1 class="font-display-sm text-display-sm text-on-surface tracking-tight leading-tight">
+            Conectamos restaurantes con fundaciones para aprovechar los alimentos
+          </h1>
+          <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
+            Un solo lugar para publicar, validar y reservar excedentes de comida.
+          </p>
+        </div>
+        <!-- Etiquetas ODS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0 text-secondary">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <div class="min-w-0">
+              <div class="font-title-md text-title-md text-on-surface truncate">ODS 2 · Hambre Cero</div>
+              <div class="font-body-sm text-body-sm text-on-surface-variant">Alimentación para todos</div>
+            </div>
+          </div>
+          <div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 text-primary">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+            </div>
+            <div class="min-w-0">
+              <div class="font-title-md text-title-md text-on-surface">ODS 12.3</div>
+              <div class="font-body-sm text-body-sm text-on-surface-variant">Reducción del desperdicio de alimentos</div>
+            </div>
+          </div>
+        </div>
+        <!-- Tarjeta "Cómo funciona" -->
+        <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm space-y-6">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary shrink-0">
+              <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            </div>
+            <h2 class="font-title-md text-title-md text-on-surface">Cómo funciona</h2>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-start space-x-3">
+              <div class="w-7 h-7 rounded-full bg-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center shrink-0 mt-0.5">1</div>
+              <p class="font-body-md text-body-md text-on-surface leading-normal"><strong class="font-label-lg">Publica:</strong> los restaurantes registran sus excedentes con cantidad y caducidad.</p>
+            </div>
+            <div class="flex items-start space-x-3">
+              <div class="w-7 h-7 rounded-full bg-tertiary text-on-tertiary font-label-md text-label-md flex items-center justify-center shrink-0 mt-0.5">2</div>
+              <p class="font-body-md text-body-md text-on-surface leading-normal"><strong class="font-label-lg">Valida:</strong> un administrador revisa cada donación antes de mostrarla.</p>
+            </div>
+            <div class="flex items-start space-x-3">
+              <div class="w-7 h-7 rounded-full bg-secondary text-on-secondary font-label-md text-label-md flex items-center justify-center shrink-0 mt-0.5">3</div>
+              <p class="font-body-md text-body-md text-on-surface leading-normal"><strong class="font-label-lg">Reserva:</strong> las fundaciones consultan los alimentos disponibles y los reservan.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- LADO DERECHO: Tarjeta blanca de acceso -->
+      <div class="lg:col-span-5 w-full">
+        <div class="bg-surface-container-lowest rounded-3xl p-8 shadow-xl">
+          <div class="flex items-center space-x-3.5 pb-6">
+            <div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shadow-sm shrink-0">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+            </div>
+            <div>
+              <div class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight leading-snug">FoodShare Network</div>
+              <div class="font-body-sm text-body-sm text-on-surface-variant">Plataforma de rescate de alimentos</div>
+            </div>
+          </div>
+          
+          <div class="w-full h-px bg-surface-variant mb-6"></div>
+          
+          <div class="mb-6">
+            <h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">Iniciar Sesión</h2>
+            <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Ingresa a tu panel de control</p>
+          </div>
+          
+          <form method="POST" action="{{ url_for('login') }}" class="space-y-5">
+            <div class="space-y-1.5">
+              <label class="block font-label-lg text-label-lg text-on-surface">Rol</label>
+              <select name="rol" class="w-full h-11 px-3.5 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
+                <option value="restaurante">Restaurante</option>
+                <option value="fundacion">Fundación</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="block font-label-lg text-label-lg text-on-surface">Correo electrónico</label>
+              <div class="relative">
+                <input type="email" name="correo" required class="w-full h-11 px-3.5 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
+              </div>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="block font-label-lg text-label-lg text-on-surface">Contraseña</label>
+              <div class="relative">
+                <input type="password" name="contrasena" required class="w-full h-11 px-3.5 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-xs">
+              </div>
+            </div>
+
+            <div class="pt-2">
+              <button type="submit" class="w-full h-12 bg-primary hover:bg-[#185734] text-white font-label-lg text-label-lg rounded-xl shadow-md flex items-center justify-center gap-2 transition-colors">
+                <span>INGRESAR AL SISTEMA</span>
+              </button>
+            </div>
+            
+            <div class="mt-6 border-t border-outline-variant pt-6">
+              <p class="font-label-sm text-label-sm text-on-surface-variant mb-3 uppercase tracking-wider text-center">Cuentas Demo</p>
+              <div class="space-y-2 text-xs text-on-surface-variant text-center">
+                  <p><strong>Restaurante:</strong> contacto@elbuensabor.mx / claveRestaurante2024</p>
+                  <p><strong>Fundación:</strong> recepcion@bancoesperanza.org / claveFundacion2024</p>
+                  <p><strong>Admin:</strong> admin@foodshare.org / rootAdminODS123</p>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

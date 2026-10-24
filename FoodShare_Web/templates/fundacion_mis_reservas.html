@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import estado_badge %}
+
+{% block title %}Mis Reservas | FoodShare Network{% endblock %}
+
+{% block content %}
+<div class="flex flex-col w-full gap-space-lg">
+  
+  <section class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+    <div class="flex flex-col gap-space-xs">
+      <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Mis reservas</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant">Donaciones que has reservado y su estado de recepción</p>
+    </div>
+  </section>
+
+  <!-- Tarjetas de resumen -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+    <div class="flex items-center justify-between p-space-lg bg-surface-container-lowest rounded-xl shadow-sm">
+      <div class="flex flex-col gap-space-xs">
+        <span class="font-label-lg text-label-lg text-on-surface-variant font-medium">Reservas activas</span>
+        <span class="font-display-sm text-display-sm text-on-surface tracking-tight leading-none mt-1">{{ total_reservas }}</span>
+      </div>
+      <div class="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+        <span class="material-symbols-outlined text-[32px]">receipt_long</span>
+      </div>
+    </div>
+    
+    <div class="flex items-center justify-between p-space-lg bg-surface-container-lowest rounded-xl shadow-sm">
+      <div class="flex flex-col gap-space-xs">
+        <span class="font-label-lg text-label-lg text-on-surface-variant font-medium">Peso por recibir</span>
+        <div class="flex items-baseline gap-space-xs mt-1">
+          <span class="font-display-sm text-display-sm text-on-surface tracking-tight leading-none">{{ peso_total }}</span>
+          <span class="font-title-md text-title-md text-on-surface-variant font-medium">kg</span>
+        </div>
+      </div>
+      <div class="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+        <span class="material-symbols-outlined text-[32px]">scale</span>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Controles (Formulario GET) -->
+  <form method="GET" action="{{ url_for('fundacion_mis_reservas') }}" class="flex flex-col sm:flex-row justify-between items-center gap-space-md">
+    <div class="relative w-full sm:w-80">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+      <input type="text" name="q" placeholder="Buscar alimento o donante" value="{{ request.args.get('q', '') }}" class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+    </div>
+    <div class="flex items-center gap-space-sm w-full sm:w-auto">
+      <span class="font-label-md text-label-md text-on-surface-variant font-semibold">Estado:</span>
+      <select name="estado" onchange="this.form.submit()" class="bg-surface-container-lowest border border-outline-variant rounded-lg px-3 py-2 font-body-md text-on-surface focus:outline-none focus:border-primary transition-all">
+        <option value="Todas" {% if request.args.get('estado') == 'Todas' %}selected{% endif %}>Todas</option>
+        <option value="Reservada" {% if request.args.get('estado') == 'Reservada' %}selected{% endif %}>Reservada</option>
+        <option value="Recibida" {% if request.args.get('estado') == 'Recibida' %}selected{% endif %}>Recibida</option>
+      </select>
+    </div>
+  </form>
+
+  <!-- Tabla -->
+  <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+    <div class="w-full overflow-x-auto">
+      <table class="w-full text-left border-collapse min-w-[850px]">
+        <thead>
+          <tr class="bg-surface-container-low h-12">
+            <th class="px-space-md font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-semibold">ID</th>
+            <th class="px-space-md font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-semibold">Descripción</th>
+            <th class="px-space-md font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-semibold">Donante</th>
+            <th class="px-space-md font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-semibold text-right">Peso (kg)</th>
+            <th class="px-space-md font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-semibold">Vence</th>
+            <th class="px-space-md font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-semibold">Estado</th>
+            <th class="px-space-md font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-semibold text-center">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for donacion in donaciones %}
+          <tr class="h-14 hover:bg-surface-container-low/50 transition-colors border-t border-outline-variant/30 group">
+            <td class="px-space-md font-label-lg text-label-lg text-on-surface font-semibold">{{ donacion.id_donacion }}</td>
+            <td class="px-space-md font-body-md text-body-md text-on-surface">{{ donacion.descripcion }}</td>
+            <td class="px-space-md font-body-md text-body-md text-on-surface-variant whitespace-nowrap">{{ donacion.donante.nombre }}</td>
+            <td class="px-space-md font-body-md text-body-md text-on-surface font-semibold text-right tabular-nums">{{ donacion.peso_total }}</td>
+            <td class="px-space-md font-body-md text-body-md text-on-surface-variant whitespace-nowrap">{{ donacion.str_vencimiento }}</td>
+            <td class="px-space-md">
+              {{ estado_badge(donacion.estado) }}
+            </td>
+            <td class="px-space-md text-center">
+              {% if donacion.estado|lower == 'reservada' %}
+                <button class="font-label-md text-label-md text-white font-semibold px-3 py-1.5 rounded bg-[#1F6F43] hover:bg-[#165634] transition-colors">Marcar como recibida</button>
+              {% else %}
+                <span class="text-on-surface-variant font-body-md">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="px-space-md py-8 text-center text-on-surface-variant font-body-md">No tienes reservas activas.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="px-space-md py-space-sm border-t border-outline-variant/30 flex justify-between items-center bg-surface-container-lowest">
+      <span class="font-label-md text-label-md text-on-surface-variant font-medium">Mostrando {{ donaciones|length }} reservas</span>
+      <span class="font-label-sm text-label-sm text-on-surface-variant">* Datos de ejemplo</span>
+    </div>
+  </section>
+</div>
+{% endblock %}
