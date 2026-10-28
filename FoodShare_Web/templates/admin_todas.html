@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import estado_badge, tarjeta, filtros, fila_vacia %}
+{% block title %}Todas las donaciones{% endblock %}
+
+{% block content %}
+<header class="flex flex-col gap-1">
+  <h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Todas las donaciones</h1>
+  <p class="font-body-md text-body-md text-on-surface-variant">Consulta todas las donaciones registradas y su estado</p>
+</header>
+
+<div class="w-full max-w-xs">
+  {{ tarjeta('Total de donaciones', total, 'list_alt') }}
+</div>
+
+{{ filtros(texto, estado, Estado.TODOS, etiqueta_todos='Todos') }}
+
+<section class="w-full bg-surface-container-lowest border border-[#CBD5E1] rounded-xl shadow-sm overflow-x-auto">
+  <table class="w-full border-collapse text-left min-w-[820px]">
+    <thead>
+      <tr class="bg-surface-container-low/70 border-b border-[#CBD5E1] h-11 text-[#64748B] font-label-md text-label-md uppercase tracking-wider">
+        <th class="px-space-md font-semibold w-[10%]">ID</th>
+        <th class="px-space-md font-semibold w-[27%]">Descripción</th>
+        <th class="px-space-md font-semibold w-[19%]">Donante</th>
+        <th class="px-space-md font-semibold w-[9%] text-right">Peso (kg)</th>
+        <th class="px-space-md font-semibold w-[12%]">Vence</th>
+        <th class="px-space-md font-semibold w-[23%]">Estado</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-[#CBD5E1]/60 font-body-sm text-body-sm text-on-surface">
+      {% for d in donaciones %}
+        <tr class="h-12 hover:bg-surface-container-low/40 transition-colors">
+          <td class="px-space-md font-label-lg text-label-lg whitespace-nowrap">
+            <a href="{{ url_for('donacion_detalle', id_donacion=d.id_donacion) }}" class="text-primary hover:underline">{{ d.id_donacion }}</a>
+          </td>
+          <td class="px-space-md truncate">{{ d.descripcion }}</td>
+          <td class="px-space-md font-medium truncate">{{ d.donante.nombre }}</td>
+          <td class="px-space-md text-right font-medium">{{ '%.1f' % d.peso_total }}</td>
+          <td class="px-space-md text-on-surface-variant whitespace-nowrap">{{ d.str_vencimiento }}</td>
+          <td class="px-space-md">{{ estado_badge(d.estado) }}</td>
+        </tr>
+      {% else %}
+        {{ fila_vacia(6) }}
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<div class="flex items-center justify-between px-1 text-on-surface-variant font-body-sm text-body-sm">
+  <span>Mostrando {{ donaciones | length }} de {{ total }} donaciones</span>
+  <span class="font-label-sm text-label-sm">* Datos de ejemplo</span>
+</div>
+{% endblock %}

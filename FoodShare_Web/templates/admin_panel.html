@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import tarjeta %}
+{% block title %}Panel del Administrador{% endblock %}
+
+{% block content %}
+<header class="flex flex-col gap-1.5">
+  <h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Panel del Administrador</h1>
+  <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Resumen general de las donaciones</p>
+</header>
+
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-lg w-full">
+  {{ tarjeta('Pendientes de validación', resumen.pendientes, 'pending_actions', color_icono='text-secondary', fondo_icono='bg-secondary-fixed/50') }}
+  {{ tarjeta('Disponibles', resumen.disponibles, 'inventory_2', nota='%.1f kg' % resumen.kg_disponibles) }}
+  {{ tarjeta('Reservadas', resumen.reservadas, 'bookmark_added', color_icono='text-tertiary') }}
+  {{ tarjeta('Recibidas', resumen.recibidas, 'task_alt') }}
+</section>
+
+<section class="flex flex-col gap-space-md w-full">
+  <div class="bg-surface-container-lowest rounded-xl p-6 border border-[#CBD5E1] shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-md">
+    <div class="flex items-center gap-space-md">
+      {% if resumen.pendientes %}
+        <div class="w-10 h-10 rounded-full bg-secondary-fixed/50 flex items-center justify-center text-secondary shrink-0">
+          <span class="material-symbols-outlined text-[22px]">notification_important</span>
+        </div>
+        <span class="text-[18px] font-semibold text-on-surface">
+          Hay {{ resumen.pendientes }} donaci{{ 'ón pendiente' if resumen.pendientes == 1 else 'ones pendientes' }} de validación
+        </span>
+      {% else %}
+        <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary shrink-0">
+          <span class="material-symbols-outlined text-[22px]">check</span>
+        </div>
+        <span class="text-[18px] font-semibold text-on-surface">No hay donaciones pendientes de validación</span>
+      {% endif %}
+    </div>
+    <a href="{{ url_for('admin_validar') }}" class="inline-flex items-center justify-center px-space-lg py-2.5 rounded-lg bg-[#1F6F43] text-on-primary font-label-lg text-label-lg font-semibold hover:bg-[#165634] shadow-sm transition-all active:scale-95 whitespace-nowrap">Ir a Validar donaciones</a>
+  </div>
+  <div class="flex justify-between pt-space-xs">
+    <a href="{{ url_for('admin_todas') }}" class="font-label-lg text-label-lg text-primary hover:underline">Ver las {{ resumen.total }} donaciones registradas</a>
+    <span class="font-label-sm text-label-sm text-on-surface-variant italic">* Datos de ejemplo</span>
+  </div>
+</section>
+{% endblock %}

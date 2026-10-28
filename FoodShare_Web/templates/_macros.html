@@ -1,0 +1,66 @@
+{# _macros.html — piezas reutilizables de la interfaz #}
+
+{# Colores de estado (especificación del equipo):
+   Disponible #1F6F43 · Reservada #1D4ED8 · Recibida #64748B · Vencida #B91C1C
+   Pendiente #B45309 · Rechazada #9F1239 #}
+{% macro estado_badge(estado) %}
+  {% set estilos = {
+    'Pendiente de validación': ('bg-[#FEF3C7] text-[#B45309]', 'bg-[#B45309]'),
+    'Disponible':              ('bg-[#DCFCE7] text-[#1F6F43]', 'bg-[#1F6F43]'),
+    'Reservada':               ('bg-[#DBEAFE] text-[#1D4ED8]', 'bg-[#1D4ED8]'),
+    'Recibida':                ('bg-[#F1F5F9] text-[#64748B]', 'bg-[#64748B]'),
+    'Vencida':                 ('bg-[#FEE2E2] text-[#B91C1C]', 'bg-[#B91C1C]'),
+    'Rechazada':               ('bg-[#FFE4E6] text-[#9F1239]', 'bg-[#9F1239]'),
+  } %}
+  {% set fondo, punto = estilos.get(estado, ('bg-surface-container text-on-surface-variant', 'bg-outline')) %}
+  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full {{ fondo }} font-label-md text-label-md whitespace-nowrap">
+    <span class="w-1.5 h-1.5 rounded-full {{ punto }}"></span>
+    {{ estado }}
+  </span>
+{% endmacro %}
+
+{# Tarjeta de métrica: título, valor, unidad o nota opcional e ícono #}
+{% macro tarjeta(titulo, valor, icono, nota='', color_icono='text-primary', fondo_icono='bg-surface-container-low') %}
+  <div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow duration-200 flex items-center justify-between">
+    <div class="flex flex-col gap-1 min-w-0">
+      <span class="font-label-lg text-label-lg text-on-surface-variant font-medium">{{ titulo }}</span>
+      <div class="flex items-baseline gap-2">
+        <span class="font-display-sm text-display-sm text-on-surface font-bold tracking-tight leading-none">{{ valor }}</span>
+        {% if nota %}<span class="font-body-sm text-body-sm text-on-surface-variant">{{ nota }}</span>{% endif %}
+      </div>
+    </div>
+    <div class="w-14 h-14 rounded-xl {{ fondo_icono }} flex items-center justify-center {{ color_icono }} shrink-0">
+      <span class="material-symbols-outlined text-[28px]">{{ icono }}</span>
+    </div>
+  </div>
+{% endmacro %}
+
+{# Barra de búsqueda + filtro de estado (formulario GET) #}
+{% macro filtros(texto, estado, opciones, placeholder='Buscar alimento o donante', etiqueta_todos='Todos') %}
+  <form method="get" class="p-space-md bg-surface-container-lowest rounded-xl shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-md">
+    <div class="relative flex-1 max-w-xl">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] pointer-events-none">search</span>
+      <input name="q" value="{{ texto }}" type="search" placeholder="{{ placeholder }}"
+             class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary transition-all">
+    </div>
+    <div class="flex items-center gap-space-sm">
+      <label for="filtro-estado" class="font-label-lg text-label-lg text-on-surface font-medium whitespace-nowrap">Estado:</label>
+      <div class="relative min-w-[200px]">
+        <select id="filtro-estado" name="estado" onchange="this.form.submit()"
+                class="w-full appearance-none pl-3 pr-9 py-2.5 bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer transition-all">
+          {% if etiqueta_todos %}<option value="todos" {% if not estado %}selected{% endif %}>{{ etiqueta_todos }}</option>{% endif %}
+          {% for op in opciones %}
+            <option value="{{ op }}" {% if op == estado %}selected{% endif %}>{{ op }}</option>
+          {% endfor %}
+        </select>
+        <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[20px]">expand_more</span>
+      </div>
+      <button type="submit" class="px-4 py-2.5 rounded-lg bg-surface-container-high text-on-surface font-label-lg text-label-lg hover:bg-surface-container-highest transition-colors">Buscar</button>
+    </div>
+  </form>
+{% endmacro %}
+
+{# Fila vacía para tablas sin resultados #}
+{% macro fila_vacia(columnas, mensaje='No hay donaciones que coincidan con la búsqueda.') %}
+  <tr><td colspan="{{ columnas }}" class="px-space-lg py-10 text-center font-body-md text-body-md text-on-surface-variant">{{ mensaje }}</td></tr>
+{% endmacro %}

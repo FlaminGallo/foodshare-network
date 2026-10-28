@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import estado_badge, tarjeta, filtros, fila_vacia %}
+{% block title %}Mis donaciones{% endblock %}
+
+{% block content %}
+<header class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+  <div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Mis donaciones</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant mt-1">Consulta tus donaciones y su estado</p>
+  </div>
+  <a href="{{ url_for('restaurante_publicar') }}" class="inline-flex items-center justify-center gap-2 px-space-lg py-2.5 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-primary transition-colors">
+    <span class="material-symbols-outlined text-[20px]">add</span>Publicar donación
+  </a>
+</header>
+
+<section class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+  {{ tarjeta('Total de donaciones', resumen.publicadas, 'inventory_2') }}
+  {{ tarjeta('Peso disponible', '%.1f' % resumen.kg_disponibles, 'scale', nota='kg') }}
+</section>
+
+{{ filtros(texto, estado, Estado.TODOS, placeholder='Buscar alimento') }}
+
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+  <div class="w-full overflow-x-auto">
+    <table class="w-full text-left border-collapse min-w-[720px]">
+      <thead>
+        <tr class="bg-surface-container-low h-12 text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">
+          <th class="px-space-lg font-semibold w-[12%]" scope="col">ID</th>
+          <th class="px-space-md font-semibold" scope="col">Descripción</th>
+          <th class="px-space-md font-semibold text-right w-[12%]" scope="col">Peso (kg)</th>
+          <th class="px-space-md font-semibold w-[14%]" scope="col">Vence</th>
+          <th class="px-space-md font-semibold w-[24%]" scope="col">Estado</th>
+        </tr>
+      </thead>
+      <tbody class="font-body-sm text-body-sm text-on-surface">
+        {% for d in donaciones %}
+          <tr class="h-12 hover:bg-surface-container-low/50 transition-colors">
+            <td class="px-space-lg font-label-lg text-label-lg whitespace-nowrap">
+              <a href="{{ url_for('donacion_detalle', id_donacion=d.id_donacion) }}" class="text-primary hover:underline">{{ d.id_donacion }}</a>
+            </td>
+            <td class="px-space-md truncate">{{ d.descripcion }}</td>
+            <td class="px-space-md text-right font-semibold tabular-nums">{{ '%.1f' % d.peso_total }}</td>
+            <td class="px-space-md text-on-surface-variant whitespace-nowrap">{{ d.str_vencimiento }}</td>
+            <td class="px-space-md">{{ estado_badge(d.estado) }}</td>
+          </tr>
+        {% else %}
+          {{ fila_vacia(5) }}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="flex items-center justify-between font-body-sm text-body-sm text-on-surface-variant px-1">
+  <span>Mostrando {{ donaciones | length }} donaci{{ 'ón' if donaciones | length == 1 else 'ones' }}</span>
+  <span class="font-label-sm text-label-sm">* Datos de ejemplo</span>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo or 'Pantalla en construcción' }}{% endblock %}
+
+{% macro aviso() %}
+  <div class="w-full flex items-center justify-center py-16">
+    <div class="bg-surface-container-lowest rounded-xl shadow-sm p-10 max-w-lg w-full flex flex-col items-center text-center gap-space-md">
+      <div class="w-16 h-16 rounded-2xl bg-secondary-fixed/50 text-secondary flex items-center justify-center">
+        <span class="material-symbols-outlined text-[36px]">{{ 'search_off' if titulo else 'construction' }}</span>
+      </div>
+      <h1 class="font-headline-md text-headline-md text-on-surface">{{ titulo or 'Pantalla en construcción' }}</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant">{{ mensaje or 'Esta sección estará disponible en las próximas etapas.' }}</p>
+      <a href="{{ url_for('index') }}" class="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-primary transition-colors">
+        <span class="material-symbols-outlined text-[18px]">home</span>Volver al inicio
+      </a>
+    </div>
+  </div>
+{% endmacro %}
+
+{% block content %}{{ aviso() }}{% endblock %}
+{% block auth_content %}{{ aviso() }}{% endblock %}

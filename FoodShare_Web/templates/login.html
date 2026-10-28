@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block auth_content %}
+<div class="flex flex-col w-full">
+  <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
+
+      <section aria-label="Información institucional de FoodShare Network" class="lg:col-span-6 flex flex-col justify-between space-y-8">
+        {% include '_bienvenida.html' %}
+      </section>
+
+      <section aria-label="Formulario de acceso" class="lg:col-span-6 flex flex-col justify-center">
+        <div class="bg-surface-container-lowest rounded-xl shadow-md p-6 sm:p-8 lg:p-10 space-y-6">
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+              </div>
+              <div class="flex flex-col">
+                <span class="font-bold text-headline-md font-headline-md tracking-tight text-on-surface leading-tight">FoodShare <span class="text-primary">Network</span></span>
+                <span class="text-label-sm font-label-sm text-on-surface-variant">Plataforma de rescate de alimentos</span>
+              </div>
+            </div>
+            <div class="pt-2 border-t border-outline/30">
+              <h2 class="text-headline-md font-headline-md text-on-surface">Iniciar sesión</h2>
+              <p class="text-body-sm font-body-sm text-on-surface-variant mt-1">Ingresa tus credenciales para acceder al sistema</p>
+            </div>
+          </div>
+
+          <form class="space-y-4" id="panel-login" method="post" action="{{ url_for('login') }}">
+            {% if error %}
+              <div role="alert" class="flex items-center gap-2 p-3 rounded-lg bg-error-container text-on-error-container text-body-sm font-body-sm">
+                <span class="material-symbols-outlined text-[20px]">error</span>{{ error }}
+              </div>
+            {% endif %}
+
+            <div class="space-y-1.5">
+              <label class="text-label-md font-label-md text-on-surface font-semibold flex items-center justify-between" for="input-email">
+                <span>Correo institucional / electrónico</span>
+                <span class="text-label-sm font-label-sm text-on-surface-variant font-normal">Requerido</span>
+              </label>
+              <div class="relative flex items-center">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"></path></svg>
+                </div>
+                <input id="input-email" name="email" type="email" required value="{{ correo }}" placeholder="nombre@organizacion.mx" autocomplete="username"
+                       class="w-full pl-11 pr-4 py-2.5 rounded-lg border border-outline/30 bg-surface-container-lowest text-on-surface text-body-md font-body-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all leading-normal">
+              </div>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-label-md font-label-md text-on-surface font-semibold flex items-center justify-between" for="input-password">
+                <span>Contraseña de acceso</span>
+                <a class="text-label-sm font-label-sm text-primary hover:underline font-medium" href="{{ url_for('recuperar_contrasena') }}">¿Olvidaste tu contraseña?</a>
+              </label>
+              <div class="relative flex items-center">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><rect height="11" rx="2" ry="2" width="18" x="3" y="11"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <input id="input-password" name="password" type="password" required placeholder="••••••••" autocomplete="current-password"
+                       class="w-full pl-11 pr-11 py-2.5 rounded-lg border border-outline/30 bg-surface-container-lowest text-on-surface text-body-md font-body-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all leading-normal">
+                <button type="button" id="btn-toggle-pwd" onclick="togglePasswordVisibility()" aria-label="Mostrar u ocultar contraseña"
+                        class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-on-surface-variant hover:text-on-surface focus:outline-none">
+                  <span class="flex items-center" id="pwd-icon-wrapper">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 pt-1">
+              <input id="remember-me" name="remember" type="checkbox" checked class="w-4 h-4 rounded text-primary focus:ring-primary focus:ring-offset-0 transition-colors cursor-pointer accent-[#1f6f43]">
+              <label for="remember-me" class="text-body-sm font-body-sm text-on-surface-variant select-none cursor-pointer">Recordar mi sesión de trabajo</label>
+            </div>
+
+            <button type="submit" id="btn-submit-login"
+                    class="w-full py-3 px-4 rounded-lg bg-primary hover:bg-primary-container text-on-primary text-label-lg font-label-lg font-semibold shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+              <span id="btn-text">Ingresar</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><line x1="5" x2="19" y1="12" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+
+            <div class="text-center pt-1">
+              <span class="text-body-sm font-body-sm text-on-surface-variant">¿No tienes una cuenta?</span>
+              <a class="text-body-sm font-body-sm text-primary font-semibold hover:underline" href="{{ url_for('crear_cuenta') }}">Regístrate</a>
+            </div>
+          </form>
+
+          <div class="pt-4 border-t border-outline/30 space-y-2.5">
+            <span class="text-label-sm font-label-sm text-on-surface-variant uppercase font-semibold tracking-wider">Cuentas demo</span>
+            <div class="grid grid-cols-3 gap-2">
+              <button type="button" onclick="fillDemo('restaurante')" class="py-2 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-center text-label-sm font-label-sm font-semibold text-secondary transition-colors">Restaurante</button>
+              <button type="button" onclick="fillDemo('fundacion')" class="py-2 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-center text-label-sm font-label-sm font-semibold text-tertiary transition-colors">Fundación</button>
+              <button type="button" onclick="fillDemo('admin')" class="py-2 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-center text-label-sm font-label-sm font-semibold text-primary transition-colors">Administrador</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Cuentas de demostración (vienen de app.py)
+  const cuentasDemo = {{ cuentas_demo | tojson }};
+
+  function fillDemo(rol) {
+    const email = document.getElementById('input-email');
+    const pwd = document.getElementById('input-password');
+    email.value = cuentasDemo[rol][0];
+    pwd.value = cuentasDemo[rol][1];
+    email.classList.add('ring-2', 'ring-primary');
+    setTimeout(() => email.classList.remove('ring-2', 'ring-primary'), 450);
+  }
+
+  function togglePasswordVisibility() {
+    const input = document.getElementById('input-password');
+    const wrapper = document.getElementById('pwd-icon-wrapper');
+    if (input.type === 'password') {
+      input.type = 'text';
+      wrapper.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+    } else {
+      input.type = 'password';
+      wrapper.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+    }
+  }
+
+  // Mientras el servidor responde, el botón muestra que está verificando.
+  document.getElementById('panel-login').addEventListener('submit', function () {
+    document.getElementById('btn-submit-login').disabled = true;
+    document.getElementById('btn-text').textContent = 'Verificando credenciales...';
+  });
+</script>
+{% endblock %}

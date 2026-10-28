@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import estado_badge %}
+{% block title %}Donación {{ d.id_donacion }}{% endblock %}
+
+{% block content %}
+<header class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+  <div>
+    <a href="javascript:history.back()" class="inline-flex items-center gap-1 font-label-lg text-label-lg text-primary hover:underline mb-2">
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span>Regresar
+    </a>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Donación {{ d.id_donacion }}</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant mt-1">{{ d.descripcion }}</p>
+  </div>
+  <div>{{ estado_badge(d.estado) }}</div>
+</header>
+
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-lg">
+  {% for titulo, valor in [
+       ('Donante', d.donante.nombre),
+       ('Peso total', '%.1f kg' % d.peso_total),
+       ('Vence (más próximo)', d.str_vencimiento),
+       ('Reservada por', d.reservado_por.nombre if d.reservado_por else '—')] %}
+    <div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+      <span class="font-label-lg text-label-lg text-on-surface-variant">{{ titulo }}</span>
+      <p class="font-title-md text-title-md text-on-surface mt-1">{{ valor }}</p>
+    </div>
+  {% endfor %}
+</section>
+
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+  <div class="px-space-lg py-space-md flex items-center justify-between">
+    <h2 class="font-title-md text-title-md text-on-surface">Alimentos ({{ d.alimentos | length }})</h2>
+    <span class="font-body-sm text-body-sm text-on-surface-variant">Publicada el {{ d.fecha_creacion.strftime('%d/%m/%Y') }}{% if d.fecha_recepcion %} · Recibida el {{ d.fecha_recepcion.strftime('%d/%m/%Y') }}{% endif %}</span>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse min-w-[600px]">
+      <thead>
+        <tr class="bg-surface-container-low h-12 text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">
+          <th class="px-space-lg font-semibold">Alimento</th>
+          <th class="px-space-md font-semibold text-right">Cantidad (kg)</th>
+          <th class="px-space-md font-semibold">Caducidad</th>
+          <th class="px-space-md font-semibold">Nutrientes</th>
+        </tr>
+      </thead>
+      <tbody class="font-body-sm text-body-sm text-on-surface">
+        {% for a in d.alimentos %}
+          <tr class="h-12">
+            <td class="px-space-lg font-semibold">{{ a.nombre }}</td>
+            <td class="px-space-md text-right">{{ '%.1f' % a.peso_kg }}</td>
+            <td class="px-space-md text-on-surface-variant">{{ a.str_vencimiento }}</td>
+            <td class="px-space-md text-on-surface-variant">{{ a.nutrientes or '—' }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{# Acciones disponibles según quién está viendo y el estado #}
+{% if usuario.rol == 'admin' and d.estado == Estado.PENDIENTE %}
+  <div class="flex gap-space-sm justify-end">
+    <form method="post" action="{{ url_for('admin_rechazar', id_donacion=d.id_donacion) }}" onsubmit="return confirm('¿Rechazar la donación {{ d.id_donacion }}?');">
+      <button class="px-5 py-2.5 rounded-lg font-label-lg text-label-lg text-[#B91C1C] bg-white border border-[#B91C1C] hover:bg-red-50">Rechazar</button>
+    </form>
+    <form method="post" action="{{ url_for('admin_aprobar', id_donacion=d.id_donacion) }}">
+      <button class="px-5 py-2.5 rounded-lg font-label-lg text-label-lg text-white bg-[#1F6F43] hover:bg-[#165634]">Aprobar</button>
+    </form>
+  </div>
+{% elif usuario.rol == 'fundacion' and d.estado == Estado.DISPONIBLE %}
+  <form method="post" action="{{ url_for('fundacion_reservar', id_donacion=d.id_donacion) }}" class="flex justify-end">
+    <button class="px-5 py-2.5 rounded-lg font-label-lg text-label-lg text-white bg-[#1F6F43] hover:bg-[#165634]">Reservar</button>
+  </form>
+{% elif usuario.rol == 'fundacion' and d.estado == Estado.RESERVADA and d.reservado_por is sameas usuario %}
+  <form method="post" action="{{ url_for('fundacion_recibir', id_donacion=d.id_donacion) }}" class="flex justify-end">
+    <button class="px-5 py-2.5 rounded-lg font-label-lg text-label-lg text-white bg-[#1F6F43] hover:bg-[#165634]">Marcar como recibida</button>
+  </form>
+{% endif %}
+{% endblock %}

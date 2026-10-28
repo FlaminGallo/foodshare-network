@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import estado_badge, tarjeta, fila_vacia %}
+{% block title %}Panel general{% endblock %}
+
+{% block content %}
+<header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-space-md">
+  <div>
+    <h1 class="font-headline-lg text-headline-lg text-on-background font-bold tracking-tight">Panel general</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Gestión de tus excedentes</p>
+  </div>
+  <a href="{{ url_for('restaurante_publicar') }}" class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg px-space-lg py-2.5 rounded-lg shadow-sm hover:shadow transition-all duration-150">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    <span>Nueva donación</span>
+  </a>
+</header>
+
+<section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-gutter">
+  {{ tarjeta('Donaciones publicadas', resumen.publicadas, 'inventory_2') }}
+  {{ tarjeta('Pendientes de validación', resumen.pendientes, 'schedule', color_icono='text-secondary', fondo_icono='bg-secondary-fixed/50') }}
+  {{ tarjeta('Kg disponibles', '%.1f' % resumen.kg_disponibles, 'scale',
+             nota='(en %d donación%s)' % (resumen.disponibles, '' if resumen.disponibles == 1 else 'es'),
+             fondo_icono='bg-primary-fixed/40') }}
+  {{ tarjeta('Reservadas', resumen.reservadas, 'task_alt', nota='(%.1f kg)' % resumen.kg_reservadas,
+             color_icono='text-tertiary', fondo_icono='bg-tertiary-fixed/50') }}
+</section>
+
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+  <div class="px-space-lg py-space-md flex items-center justify-between">
+    <h2 class="font-title-md text-title-md text-on-background font-semibold tracking-tight">Últimas donaciones</h2>
+    <a href="{{ url_for('restaurante_mis_donaciones') }}" class="font-label-lg text-label-lg text-primary hover:underline">Ver todas</a>
+  </div>
+  <div class="w-full overflow-x-auto">
+    <table class="w-full text-left border-collapse min-w-[720px]">
+      <thead>
+        <tr class="bg-surface-container-low text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">
+          <th class="py-3 px-space-lg font-semibold w-28" scope="col">ID</th>
+          <th class="py-3 px-space-md font-semibold" scope="col">Alimento</th>
+          <th class="py-3 px-space-md font-semibold text-right w-36" scope="col">Cantidad (kg)</th>
+          <th class="py-3 px-space-md font-semibold w-36" scope="col">Caducidad</th>
+          <th class="py-3 px-space-md font-semibold w-52" scope="col">Estado</th>
+          <th class="py-3 px-space-lg font-semibold text-right w-32" scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="font-body-sm text-body-sm text-on-surface">
+        {% for d in donaciones %}
+          <tr class="{{ 'bg-surface-container-lowest' if loop.index is even }} hover:bg-surface-container-low/60 transition-colors duration-150">
+            <td class="py-3.5 px-space-lg font-mono font-semibold text-on-background">{{ d.id_donacion }}</td>
+            <td class="py-3.5 px-space-md font-medium text-on-background">{{ d.descripcion }}</td>
+            <td class="py-3.5 px-space-md text-right font-semibold text-on-background">{{ '%.1f' % d.peso_total }}</td>
+            <td class="py-3.5 px-space-md text-on-surface-variant">{{ d.str_vencimiento }}</td>
+            <td class="py-3.5 px-space-md">{{ estado_badge(d.estado) }}</td>
+            <td class="py-3.5 px-space-lg text-right">
+              <a class="font-label-lg text-label-lg text-primary hover:underline font-semibold inline-block" href="{{ url_for('donacion_detalle', id_donacion=d.id_donacion) }}">Ver detalle</a>
+            </td>
+          </tr>
+        {% else %}
+          {{ fila_vacia(6, 'Todavía no has publicado donaciones.') }}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="px-space-lg py-3 flex items-center justify-end">
+    <span class="font-label-sm text-label-sm text-outline">* Datos de ejemplo</span>
+  </div>
+</section>
+{% endblock %}
