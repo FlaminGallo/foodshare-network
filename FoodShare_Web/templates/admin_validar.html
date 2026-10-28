@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import estado_badge, tarjeta, fila_vacia %}
+{% block title %}Validar donaciones{% endblock %}
+
+{% block content %}
+<header class="flex flex-col gap-1.5">
+  <h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Validar donaciones</h1>
+  <p class="font-body-md text-body-md text-on-surface-variant">Revisa las donaciones pendientes y decide si se aprueban o se rechazan</p>
+</header>
+
+<div class="w-full max-w-xs">
+  {{ tarjeta('Pendientes de validación', donaciones | length, 'pending_actions', color_icono='text-secondary', fondo_icono='bg-secondary-fixed/50') }}
+</div>
+
+<div class="flex flex-col">
+  <div class="w-full bg-surface-container-lowest rounded-xl border border-[#CBD5E1] shadow-sm overflow-x-auto">
+    <table class="w-full text-left border-collapse min-w-[860px]">
+      <thead>
+        <tr class="bg-surface-container-low border-b border-[#CBD5E1] text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">
+          <th class="py-3 px-space-md font-semibold" scope="col">ID</th>
+          <th class="py-3 px-space-md font-semibold" scope="col">Descripción</th>
+          <th class="py-3 px-space-md font-semibold" scope="col">Donante</th>
+          <th class="py-3 px-space-md font-semibold text-right" scope="col">Peso (kg)</th>
+          <th class="py-3 px-space-md font-semibold" scope="col">Vence</th>
+          <th class="py-3 px-space-md font-semibold" scope="col">Estado</th>
+          <th class="py-3 px-space-md font-semibold text-center" scope="col">Acción</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-[#CBD5E1] font-body-sm text-body-sm text-on-surface">
+        {% for d in donaciones %}
+          <tr class="hover:bg-surface-container-low/60 transition-colors">
+            <td class="py-3 px-space-md font-label-lg text-label-lg whitespace-nowrap">
+              <a href="{{ url_for('donacion_detalle', id_donacion=d.id_donacion) }}" class="text-primary hover:underline" title="Ver los alimentos">{{ d.id_donacion }}</a>
+            </td>
+            <td class="py-3 px-space-md">{{ d.descripcion }}{% if d.alimentos | length > 1 %} <span class="text-on-surface-variant">({{ d.alimentos | length }} alimentos)</span>{% endif %}</td>
+            <td class="py-3 px-space-md text-on-surface-variant whitespace-nowrap">{{ d.donante.nombre }}</td>
+            <td class="py-3 px-space-md text-right font-semibold">{{ '%.1f' % d.peso_total }}</td>
+            <td class="py-3 px-space-md text-on-surface-variant whitespace-nowrap">{{ d.str_vencimiento }}</td>
+            <td class="py-3 px-space-md">{{ estado_badge(d.estado) }}</td>
+            <td class="py-3 px-space-md text-center whitespace-nowrap">
+              <div class="inline-flex items-center justify-center gap-1.5">
+                <form method="post" action="{{ url_for('admin_aprobar', id_donacion=d.id_donacion) }}">
+                  <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg font-label-md text-label-md text-white bg-[#1F6F43] hover:bg-[#185835] shadow-sm transition-colors">Aprobar</button>
+                </form>
+                <form method="post" action="{{ url_for('admin_rechazar', id_donacion=d.id_donacion) }}"
+                      onsubmit="return confirm('¿Rechazar la donación {{ d.id_donacion }}? Esta acción no se puede deshacer.');">
+                  <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg font-label-md text-label-md text-[#B91C1C] bg-white border border-[#B91C1C] hover:bg-red-50 transition-colors">Rechazar</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          {{ fila_vacia(7, 'No hay donaciones pendientes. ¡Todo está al día!') }}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-3 px-1">
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Al aprobar, la donación pasa a Disponible. Al rechazar, pasa a Rechazada.</p>
+    <span class="font-label-sm text-label-sm text-on-surface-variant italic">* Datos de ejemplo</span>
+  </div>
+</div>
+{% endblock %}

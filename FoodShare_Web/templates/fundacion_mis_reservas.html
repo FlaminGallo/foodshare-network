@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import estado_badge, tarjeta, filtros, fila_vacia %}
+{% block title %}Mis reservas{% endblock %}
+
+{% block content %}
+<header class="flex flex-col gap-1.5">
+  <h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Mis reservas</h1>
+  <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Donaciones que has reservado y su estado de recepción</p>
+</header>
+
+<section class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+  {{ tarjeta('Reservas activas', resumen.activas, 'calendar_month') }}
+  {{ tarjeta('Peso por recibir', '%.1f' % resumen.kg_por_recibir, 'scale', nota='kg') }}
+</section>
+
+{{ filtros(texto, estado, [Estado.RESERVADA, Estado.RECIBIDA], etiqueta_todos='Todas') }}
+
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+  <div class="w-full overflow-x-auto">
+    <table class="w-full text-left whitespace-nowrap">
+      <thead>
+        <tr class="bg-surface-container-low h-12 text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">
+          <th class="w-[80px] pl-6 pr-3 py-3 font-semibold" scope="col">ID</th>
+          <th class="px-3 py-3 font-semibold" scope="col">Descripción</th>
+          <th class="px-3 py-3 font-semibold" scope="col">Donante</th>
+          <th class="w-[95px] px-3 py-3 font-semibold text-right" scope="col">Peso (kg)</th>
+          <th class="w-[110px] px-3 py-3 font-semibold" scope="col">Vence</th>
+          <th class="w-[125px] px-3 py-3 font-semibold" scope="col">Estado</th>
+          <th class="w-[185px] pl-3 pr-6 py-3 font-semibold text-center" scope="col">Acción</th>
+        </tr>
+      </thead>
+      <tbody class="font-body-sm text-body-sm text-on-surface">
+        {% for d in donaciones %}
+          <tr class="h-12 hover:bg-surface-container transition-colors duration-150">
+            <td class="pl-6 pr-3 font-label-lg text-label-lg">
+              <a href="{{ url_for('donacion_detalle', id_donacion=d.id_donacion) }}" class="text-primary hover:underline">{{ d.id_donacion }}</a>
+            </td>
+            <td class="px-3">{{ d.descripcion }}</td>
+            <td class="px-3 text-on-surface-variant">{{ d.donante.nombre }}</td>
+            <td class="px-3 font-label-lg text-label-lg text-right">{{ '%.1f' % d.peso_total }}</td>
+            <td class="px-3 text-on-surface-variant">{{ d.str_vencimiento }}</td>
+            <td class="px-3">{{ estado_badge(d.estado) }}</td>
+            <td class="pl-3 pr-6 text-center">
+              {% if d.estado == Estado.RESERVADA %}
+                <form method="post" action="{{ url_for('fundacion_recibir', id_donacion=d.id_donacion) }}">
+                  <button type="submit" class="inline-flex items-center justify-center px-3.5 py-1.5 rounded-lg bg-[#1F6F43] hover:bg-[#165634] text-on-primary font-label-md text-label-md font-semibold shadow-sm transition-all active:scale-95 whitespace-nowrap">Marcar como recibida</button>
+                </form>
+              {% else %}
+                <span class="text-on-surface-variant font-label-lg text-label-lg">—</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% else %}
+          {{ fila_vacia(7, 'No hay reservas que coincidan. Busca donaciones en «Explorar donaciones».') }}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="px-6 py-3 flex items-center justify-between">
+    <span class="font-body-sm text-body-sm text-on-surface-variant">Mostrando {{ donaciones | length }} de {{ total }} reservas</span>
+    <span class="font-label-sm text-label-sm text-on-surface-variant italic">* Datos de ejemplo</span>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}FoodShare Network{% endblock %} | FoodShare Network</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <style>
+    @layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } }
+    body { font-family: 'Inter', sans-serif; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  </style>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-container":"#714800","on-error":"#ffffff","on-tertiary":"#ffffff","on-primary-fixed":"#00210f","primary-fixed":"#a5f4bc","on-tertiary-fixed":"#00174b","inverse-primary":"#89d7a2","surface-bright":"#f7f9ff","on-primary-container":"#a0efb8","primary-container":"#1f6f43","secondary-fixed-dim":"#ffb956","surface-container-highest":"#d9e3f1","inverse-surface":"#27313c","on-secondary-fixed-variant":"#643f00","surface":"#f7f9ff","surface-tint":"#1b6c40","error-container":"#ffdad6","surface-dim":"#d1dbe8","surface-container-low":"#edf4ff","on-error-container":"#93000a","surface-container-lowest":"#ffffff","tertiary":"#0040ae","on-secondary":"#ffffff","surface-container":"#e4effd","on-tertiary-container":"#d4dcff","secondary-fixed":"#ffddb5","on-secondary-fixed":"#2a1800","on-surface-variant":"#3f4941","on-primary":"#ffffff","surface-container-high":"#dfe9f7","tertiary-fixed":"#dbe1ff","surface-variant":"#d9e3f1","primary":"#00562e","inverse-on-surface":"#e8f2ff","on-surface":"#121d26","tertiary-container":"#0956df","background":"#f7f9ff","primary-fixed-dim":"#89d7a2","on-primary-fixed-variant":"#00522c","secondary-container":"#feb64e","outline":"#707a70","on-tertiary-fixed-variant":"#003ea8","tertiary-fixed-dim":"#b4c5ff","outline-variant":"#bfc9be","on-background":"#121d26","secondary":"#835400","error":"#ba1a1a"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-xl":"2rem","margin-mobile":"1rem","gutter-sm":"1rem","space-xs":"0.25rem","space-lg":"1.5rem","space-sm":"0.5rem","margin":"2rem","space-md":"1rem","gutter":"1.5rem"},fontFamily:{"display-sm":["Inter"],"headline-lg":["Inter"],"body-sm":["Inter"],"title-md":["Inter"],"label-sm":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"headline-md":["Inter"],"headline-sm":["Inter"],"body-lg":["Inter"],"label-lg":["Inter"],"display-lg":["Inter"],"headline-lg-mobile":["Inter"]},fontSize:{"display-sm":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"-0.015em","fontWeight":"700"}],"headline-lg":["2rem",{"lineHeight":"2.5rem","letterSpacing":"-0.01em","fontWeight":"600"}],"body-sm":["0.875rem",{"lineHeight":"1.25rem","fontWeight":"400"}],"title-md":["1.125rem",{"lineHeight":"1.5rem","fontWeight":"600"}],"label-sm":["0.6875rem",{"lineHeight":"0.875rem","letterSpacing":"0.025em","fontWeight":"500"}],"body-md":["1rem",{"lineHeight":"1.5rem","fontWeight":"400"}],"label-md":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.02em","fontWeight":"600"}],"headline-md":["1.5rem",{"lineHeight":"2rem","fontWeight":"600"}],"headline-sm":["1.25rem",{"lineHeight":"1.75rem","fontWeight":"600"}],"body-lg":["1.125rem",{"lineHeight":"1.75rem","fontWeight":"400"}],"label-lg":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0.01em","fontWeight":"600"}],"display-lg":["3.5rem",{"lineHeight":"4.25rem","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-lg-mobile":["1.625rem",{"lineHeight":"2.125rem","letterSpacing":"-0.01em","fontWeight":"600"}]}}}};
+  </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased">
+
+  {# ---------- Mensajes (flash) como avisos flotantes ---------- #}
+  {% with mensajes = get_flashed_messages(with_categories=true) %}
+    {% if mensajes %}
+      <div id="avisos" class="fixed bottom-6 right-6 z-[60] flex flex-col gap-space-sm max-w-md">
+        {% for categoria, mensaje in mensajes %}
+          {% set es_error = categoria == 'error' %}
+          <div class="aviso bg-surface-container-lowest rounded-xl shadow-xl p-space-md flex items-center gap-space-sm transition-all duration-300">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 {{ 'bg-error-container text-error' if es_error else ('bg-primary-fixed text-primary' if categoria == 'exito' else 'bg-surface-container text-tertiary') }}">
+              <span class="material-symbols-outlined text-[20px]">{{ 'error' if es_error else ('check' if categoria == 'exito' else 'info') }}</span>
+            </div>
+            <span class="font-body-sm text-body-sm text-on-surface">{{ mensaje }}</span>
+          </div>
+        {% endfor %}
+      </div>
+      <script>
+        setTimeout(function () {
+          document.querySelectorAll('#avisos .aviso').forEach(function (a) {
+            a.style.opacity = '0'; a.style.transform = 'translateY(1rem)';
+          });
+          setTimeout(function () { var c = document.getElementById('avisos'); if (c) c.remove(); }, 400);
+        }, 5000);
+      </script>
+    {% endif %}
+  {% endwith %}
+
+  {% if usuario %}
+    {# ---------- Menú lateral según el rol ---------- #}
+    {% if usuario.rol == 'restaurante' %}
+      {% set menu = [('restaurante_panel', 'grid_view', 'Panel'),
+                     ('restaurante_publicar', 'add_circle', 'Publicar donación'),
+                     ('restaurante_mis_donaciones', 'inventory_2', 'Mis donaciones'),
+                     ('en_construccion', 'notifications', 'Alertas')] %}
+    {% elif usuario.rol == 'fundacion' %}
+      {% set menu = [('fundacion_explorar', 'search', 'Explorar donaciones'),
+                     ('fundacion_mis_reservas', 'receipt_long', 'Mis reservas'),
+                     ('en_construccion', 'notifications', 'Alertas')] %}
+    {% else %}
+      {% set menu = [('admin_panel', 'grid_view', 'Panel'),
+                     ('admin_validar', 'fact_check', 'Validar donaciones'),
+                     ('admin_todas', 'list_alt', 'Todas las donaciones')] %}
+    {% endif %}
+
+    <aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-low border-r border-outline-variant z-50 flex flex-col justify-between p-space-md">
+      <div class="flex flex-col gap-space-lg">
+        <a href="{{ url_for('inicio_por_rol') }}" class="flex items-center gap-space-sm px-space-xs py-space-sm">
+          <span class="material-symbols-outlined text-primary text-[28px]">eco</span>
+          <div class="flex flex-col">
+            <span class="font-title-md text-title-md text-on-surface tracking-tight leading-none">FoodShare</span>
+            <span class="font-label-sm text-label-sm text-primary font-bold uppercase tracking-wider leading-none mt-1">Network</span>
+          </div>
+        </a>
+        <nav class="flex flex-col gap-space-xs">
+          {% for endpoint, icono, texto in menu %}
+            {% set activo = request.endpoint == endpoint %}
+            <a href="{{ url_for(endpoint) }}" {% if activo %}aria-current="page"{% endif %}
+               class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg transition-colors font-label-lg text-label-lg {{ 'bg-primary-container text-on-primary shadow-sm' if activo else 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }}">
+              <span class="material-symbols-outlined text-[20px]">{{ icono }}</span>
+              <span>{{ texto }}</span>
+            </a>
+          {% endfor %}
+        </nav>
+      </div>
+      <div class="pt-space-md">
+        <a href="{{ url_for('logout') }}" class="flex items-center justify-center gap-space-sm w-full py-2.5 px-space-md rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-all">
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+          <span>Cerrar sesión</span>
+        </a>
+      </div>
+    </aside>
+
+    <div class="pl-64">
+      {# ---------- Barra superior: nombre y rol ---------- #}
+      <header class="fixed top-0 left-64 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-end px-space-xl border-b border-outline-variant/40">
+        <div class="flex items-center gap-space-md">
+          <div class="flex items-center gap-space-sm">
+            <span class="font-label-lg text-label-lg text-on-surface font-semibold">{{ usuario.nombre }}</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-label-md font-label-md bg-surface-container text-primary font-semibold">{{ usuario.etiqueta_rol }}</span>
+          </div>
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+        </div>
+      </header>
+
+      {# pt-24 = 64 px del header fijo + 32 px de aire, para que el título no quede pegado #}
+      <main class="relative bg-surface min-h-screen w-full px-space-xl pt-24 pb-space-xl">
+        <div class="flex flex-col w-full gap-space-lg max-w-[1440px] mx-auto">
+          {% block content %}{% endblock %}
+        </div>
+      </main>
+    </div>
+  {% else %}
+    <main class="w-full min-h-screen bg-surface flex items-center justify-center p-space-md">
+      {% block auth_content %}{% endblock %}
+    </main>
+  {% endif %}
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

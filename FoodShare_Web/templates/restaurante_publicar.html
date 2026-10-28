@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}Publicar donación{% endblock %}
+
+{% set clase_input = 'w-full h-11 px-3.5 rounded-lg text-on-surface placeholder:text-outline font-body-md text-body-md bg-surface-container-low/50 focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary-container transition-all' %}
+
+{% block content %}
+{# Toda la pantalla es un solo formulario. Cada botón manda un valor distinto
+   en "accion" (agregar, quitar-N, cancelar, publicar) y app.py decide qué hacer.
+   formnovalidate evita que el navegador exija los campos del alimento al publicar o quitar. #}
+<form method="post" action="{{ url_for('restaurante_publicar') }}" class="flex flex-col gap-space-lg w-full max-w-6xl mx-auto">
+
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+    <div>
+      <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Publicar donación</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant mt-1">Registra los alimentos que quieres donar</p>
+    </div>
+    <div class="bg-surface-container-low px-4 py-2 rounded-xl flex items-center gap-2.5 shadow-sm self-start sm:self-center">
+      <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+      <span class="font-label-md text-label-md text-on-surface-variant font-medium">Donación:</span>
+      <span class="font-title-md text-title-md text-primary font-bold">{{ siguiente_id }}</span>
+    </div>
+  </header>
+
+  {# Tarjeta 1: datos del alimento #}
+  <section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+    <div class="flex items-center gap-space-sm">
+      <div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+        <span class="material-symbols-outlined text-[20px]">restaurant</span>
+      </div>
+      <h2 class="font-title-md text-title-md text-on-surface">Datos del alimento</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+      <div class="flex flex-col gap-1.5">
+        <label class="font-label-lg text-label-lg text-on-surface" for="food-name">Nombre del alimento <span class="text-error">*</span></label>
+        <input id="food-name" name="food_name" type="text" required value="{{ campos.get('food_name', '') }}" placeholder="ej. Guisado de pollo" class="{{ clase_input }}" {% if not borrador %}autofocus{% endif %}>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="font-label-lg text-label-lg text-on-surface" for="food-weight">Cantidad (kg) <span class="text-error">*</span></label>
+        <div class="relative flex items-center">
+          <input id="food-weight" name="food_weight" type="number" required min="0.1" step="0.1" value="{{ campos.get('food_weight', '') }}" placeholder="ej. 10.0" class="{{ clase_input }} pr-12">
+          <span class="absolute right-3.5 font-label-md text-label-md text-on-surface-variant font-medium pointer-events-none">kg</span>
+        </div>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="font-label-lg text-label-lg text-on-surface" for="food-expiry">Fecha de caducidad <span class="text-error">*</span></label>
+        <div class="relative flex items-center">
+          <input id="food-expiry" name="food_expiry" type="text" required pattern="\d{2}/\d{2}/\d{4}" title="Usa el formato dd/mm/aaaa" value="{{ campos.get('food_expiry', '') }}" placeholder="dd/mm/aaaa" class="{{ clase_input }} pr-10">
+          <span class="material-symbols-outlined absolute right-3 text-outline pointer-events-none text-[20px]">calendar_today</span>
+        </div>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="font-label-lg text-label-lg text-on-surface" for="food-nutrients">Nutrientes <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <input id="food-nutrients" name="food_nutrients" type="text" value="{{ campos.get('food_nutrients', '') }}" placeholder="ej. Proteínas" class="{{ clase_input }}">
+      </div>
+    </div>
+    <div class="flex justify-end pt-2">
+      <button type="submit" name="accion" value="agregar" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary-container text-on-primary hover:opacity-95 font-label-lg text-label-lg transition-all shadow-sm active:scale-95">
+        <span class="material-symbols-outlined text-[18px]">add</span>
+        <span>Agregar a la donación</span>
+      </button>
+    </div>
+  </section>
+
+  {# Tarjeta 2: alimentos agregados #}
+  <section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+    <div class="flex items-center gap-space-sm">
+      <div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+        <span class="material-symbols-outlined text-[20px]">list_alt</span>
+      </div>
+      <h2 class="font-title-md text-title-md text-on-surface">Alimentos de esta donación</h2>
+    </div>
+    <div class="overflow-x-auto rounded-lg bg-surface-container-low/40">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-surface-container-high/60 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">
+            <th class="py-3 px-space-md" scope="col">Alimento</th>
+            <th class="py-3 px-space-md text-right" scope="col">Cantidad (kg)</th>
+            <th class="py-3 px-space-md" scope="col">Caducidad</th>
+            <th class="py-3 px-space-md" scope="col">Nutrientes</th>
+            <th class="py-3 px-space-md text-center" scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="font-body-md text-body-md text-on-surface">
+          {% for a in borrador %}
+            <tr class="hover:bg-surface-container-low/70 transition-colors {{ 'bg-surface-container-lowest/50' if loop.index is even }}">
+              <td class="py-3.5 px-space-md font-semibold">{{ a.nombre }}</td>
+              <td class="py-3.5 px-space-md text-right font-medium">{{ '%.1f' % a.peso }}</td>
+              <td class="py-3.5 px-space-md text-on-surface-variant">{{ a.caducidad }}</td>
+              <td class="py-3.5 px-space-md text-on-surface-variant">{{ a.nutrientes or '—' }}</td>
+              <td class="py-3.5 px-space-md text-center">
+                <button type="submit" name="accion" value="quitar-{{ loop.index0 }}" formnovalidate class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-error bg-error-container/60 hover:bg-error-container font-label-sm text-label-sm transition-colors">
+                  <span class="material-symbols-outlined text-[14px]">delete</span><span>Quitar</span>
+                </button>
+              </td>
+            </tr>
+          {% else %}
+            <tr><td colspan="5" class="py-8 px-space-md text-center text-on-surface-variant font-body-sm text-body-sm">Aún no agregas alimentos. Llena los datos de arriba y pulsa «Agregar a la donación».</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="flex items-center gap-2 px-space-md py-3 rounded-lg bg-surface-container-high/40 text-on-surface">
+      <span class="material-symbols-outlined text-primary text-[18px]">summarize</span>
+      <span class="font-label-lg text-label-lg">Total alimentos: {{ borrador | length }} · <span class="text-primary font-bold">Total: {{ '%.1f' % total_kg }} kg</span></span>
+    </div>
+  </section>
+
+  <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm">
+    <label class="flex items-start gap-space-sm cursor-pointer select-none">
+      <input type="checkbox" name="declaracion" value="1" checked class="mt-0.5 w-5 h-5 rounded accent-[#1f6f43] cursor-pointer">
+      <span class="font-body-md text-body-md text-on-surface leading-snug">Declaro que los alimentos se conservan en condiciones de higiene y temperatura adecuada</span>
+    </label>
+  </div>
+
+  <div class="rounded-xl bg-surface-container-low p-space-md flex items-center gap-space-md shadow-sm">
+    <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-tertiary shrink-0">
+      <span class="material-symbols-outlined text-[20px]">info</span>
+    </div>
+    <p class="font-body-md text-body-md text-on-surface">La donación quedará <strong class="font-semibold text-primary">Pendiente de validación</strong> hasta que un administrador la apruebe</p>
+  </div>
+
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-space-md pt-2">
+    <span class="order-2 sm:order-1 font-label-sm text-label-sm text-outline">* Datos de ejemplo</span>
+    <div class="order-1 sm:order-2 flex items-center gap-space-md w-full sm:w-auto">
+      <button type="submit" name="accion" value="cancelar" formnovalidate class="flex-1 sm:flex-initial px-6 py-2.5 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container-highest font-label-lg text-label-lg transition-colors">Cancelar</button>
+      <button type="submit" name="accion" value="publicar" formnovalidate {% if not borrador %}disabled title="Agrega al menos un alimento"{% endif %}
+              class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-primary-container text-on-primary hover:opacity-95 font-label-lg text-label-lg shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+        <span class="material-symbols-outlined text-[18px]">send</span>
+        <span>Publicar donación</span>
+      </button>
+    </div>
+  </div>
+</form>
+{% endblock %}
